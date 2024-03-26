@@ -36,11 +36,15 @@ public class Parser {
 
         switch (commandParts[0]) {
         case "add":
+
             String category = ui.promptForCategory();
             int amount = ui.promptForAmount();
             Grocery grocery = new Grocery(commandParts[1], amount, LocalDate.now(), category);
+
             String expiration = ui.promptForExpiration();
+            String cost = ui.promptForCost();
             grocery.setExpiration(expiration);
+            grocery.setCost(cost);
             groceryList.addGrocery(grocery);
             break;
 
@@ -53,12 +57,20 @@ public class Parser {
             groceryList.editAmount(commandParts[1], commandParts[0].equals("use"));
             break;
 
+        case "cost":
+            groceryList.editCost(commandParts[1]);
+            break;
+
         case "del":
             groceryList.removeGrocery(commandParts[1]);
             break;
 
         case "list":
             groceryList.listGroceries();
+            break;
+
+        case "listC":
+            groceryList.sortByCost();
             break;
 
         case "help":

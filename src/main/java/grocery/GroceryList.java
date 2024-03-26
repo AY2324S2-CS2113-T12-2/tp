@@ -1,6 +1,7 @@
 package grocery;
 
 import exceptions.InvalidAmountException;
+import exceptions.InvalidCostException;
 import git.Ui;
 import exceptions.GitException;
 import exceptions.commands.EmptyGroceryException;
@@ -37,6 +38,9 @@ public class GroceryList {
 
     /**
      * Adds a grocery.
+     *
+     * @param grocery Grocery to be added.
+     * @throws EmptyGroceryException If grocery name == null.
      */
     public void addGrocery(Grocery grocery) throws EmptyGroceryException {
         if (grocery.getName() == null || grocery.getName().trim().isEmpty()) {
@@ -59,7 +63,9 @@ public class GroceryList {
     /**
      * Returns the desired grocery.
      *
-     * @throws NoSuchGroceryException Selected grocery does not exist.
+     * @param name Name of the grocery.
+     * @return The needed grocery.
+     * @throws NoSuchGroceryException If the selected grocery does not exist.
      */
     private Grocery getGrocery(String name) throws NoSuchGroceryException {
         int index = -1;
@@ -120,6 +126,7 @@ public class GroceryList {
     /**
      * Adds the expiration date of an existing grocery.
      *
+     * @param details A string containing grocery name and details.
      * @throws GitException Exception thrown depending on error.
      */
     public void editExpiration(String details) throws GitException {
@@ -182,6 +189,28 @@ public class GroceryList {
     }
 
     /**
+     * Updates the cost of an existing grocery.
+     *
+     * @param details A string containing grocery name and details.
+     * @throws GitException If the input new cost is not numeric.
+     */
+    public void editCost(String details) throws GitException {
+        // Assuming the format is "cost GROCERY $PRICE"
+        System.out.println(details);
+        String[] costParts = checkDetails(details, "cost", "\\$");
+        Grocery grocery = getGrocery(costParts[0].strip());
+        String price = costParts[1].strip();
+
+        try {
+            double cost = Double.parseDouble(price);
+            grocery.setCost(String.format("%.2f", cost));
+            Ui.printCostSet(grocery);
+        } catch (NumberFormatException e) {
+            throw new InvalidCostException();
+        }
+    }
+
+    /**
      * Lists all the user's groceries.
      */
     public void listGroceries() {
@@ -200,10 +229,23 @@ public class GroceryList {
         Collections.sort(groceries, (g1, g2) -> g1.getExpiration().compareTo(g2.getExpiration()));
     }
 
+    public void sortByCost() {
+        int size = groceries.size();
+        if (size == 0) {
+            Ui.printNoGrocery();
+        } else {
+            List<Grocery> groceriesByDate = groceries;
+            groceriesByDate.sort((g1, g2) -> Double.compare(g1.getCost(), g2.getCost()));
+            Collections.reverse(groceriesByDate);
+            Ui.printGroceryList(groceriesByDate);
+        }
+    }
+
     /**
      * Removes a grocery.
      *
-     * @throws GitException Exception thrown depending on error.
+     * @param details User input.
+     * @throws GitException If grocery is empty.
      */
     public void removeGrocery(String details) throws GitException {
         assert (!groceries.isEmpty()) : "There is nothing to remove.";

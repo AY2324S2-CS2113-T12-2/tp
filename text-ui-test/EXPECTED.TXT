@@ -14,8 +14,10 @@ add GROCERY: adds the item GROCERY.
 exp GROCERY d/EXPIRATION_DATE: edits the expiration date for GROCERY.
 amt GROCERY a/AMOUNT: sets the amount of GROCERY.
 use GROCERY a/AMOUNT: updates the total amount after using a GROCERY
+cost GROCERY $PRICE: updates the price of GROCERY.
 del GROCERY: deletes GROCERY.
 list: shows list of all groceries you have.
+listC: shows the list sorted by price.
 exit: exits the program.
 help: view all the possible commands.
 Enter command:
